@@ -14,7 +14,33 @@ export class CreateEmployeeComponent implements OnInit {
   ngOnInit() {
     this.employeeForm = new FormGroup({
       fullName: new FormControl(),
-      email: new FormControl()
+      email: new FormControl(),
+
+      //Nested form group
+      skills: new FormGroup({
+        skillName: new FormControl(),
+        experienceInYears: new FormControl(),
+        proficiency: new FormControl()
+      })
+    });
+  }
+
+  onLoadDataClick(): void {
+    this.employeeForm.setValue({
+      fullName: 'Safayat Borhan',
+      email: 'safayat@celimited.com',
+      skills: {
+        skillName: "C#",
+        experienceInYears: 2,
+        proficiency: 'beginner'
+      }
+    });
+  }
+
+  onLoadDataPatchClick(): void {
+    this.employeeForm.patchValue({
+      fullName: 'Safayat Borhan from patch',
+      email: 'safayat@celimited.com from patch'
     });
   }
 
