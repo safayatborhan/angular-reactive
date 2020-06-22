@@ -50,6 +50,22 @@ export class CreateEmployeeComponent implements OnInit {
     });
   }
 
+  logKeyValuePairs(group: FormGroup): void {
+    Object.keys(group.controls).forEach((key: string) => {
+      const abstractControl = group.get(key);
+      if(abstractControl instanceof FormGroup) {
+        this.logKeyValuePairs(abstractControl);
+      } else {
+        console.log('Key = ' + key + ' Value = ' + abstractControl.value);
+        abstractControl.disable();
+      }
+    });
+  }
+
+  onLoadKeyValuePair(): void {
+    this.logKeyValuePairs(this.employeeForm);
+  }
+
   onLoadDataClick(): void {
     this.employeeForm.setValue({
       fullName: 'Safayat Borhan',
