@@ -15,6 +15,8 @@
         <span *ngIf="(employeeForm.get('fullName').hasError('minlength') || employeeForm.get('fullName').hasError('maxlength')) && employeeForm.get('fullName').touched">          
           <label class="col-sm-8 control-label" style="color:red">Full Name is greater than 2 char and less than 10 char</label>
         </span>
+
+        <label>{{fullNameLength}}</label>
       </div>
 
       <div class="form-group">
