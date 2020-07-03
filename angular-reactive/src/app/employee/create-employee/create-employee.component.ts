@@ -10,6 +10,7 @@ export class CreateEmployeeComponent implements OnInit {
 
   employeeForm: FormGroup;
   fullNameLength = 0;
+  //This object contains all validation messages of form control
   validationMessages = {
     'fullName': {
       'required': 'Full Name is required.',
@@ -29,6 +30,7 @@ export class CreateEmployeeComponent implements OnInit {
       'required': 'Proficiency is required.',
     },
   };
+  //This object will only contain validation messages of failed form controls and bind these to UI
   formErrors = {
     'fullName': '',
     'email': '',
@@ -62,18 +64,18 @@ export class CreateEmployeeComponent implements OnInit {
       })
     });
 
-    this.employeeForm.get('fullName').valueChanges.subscribe((values: string) => {
-      console.log(values);
-      this.fullNameLength = values.length;
-    });
+    // this.employeeForm.get('fullName').valueChanges.subscribe((values: string) => {
+    //   console.log(values);
+    //   this.fullNameLength = values.length;
+    // });
 
     this.employeeForm.valueChanges.subscribe(values => {
-      console.log(JSON.stringify(values));
+      this.logValidationErrors(this.employeeForm);
     });
 
-    this.employeeForm.get('skills').valueChanges.subscribe(values => {
-      console.log(JSON.stringify(values));
-    });
+    // this.employeeForm.get('skills').valueChanges.subscribe(values => {
+    //   console.log(JSON.stringify(values));
+    // });
   }
 
   logKeyValuePairs(group: FormGroup): void {
@@ -88,17 +90,17 @@ export class CreateEmployeeComponent implements OnInit {
     });
   }
 
-  logValidationErrors(group: FormGroup): void {
+  logValidationErrors(group: FormGroup = this.employeeForm): void {
     Object.keys(group.controls).forEach((key: string) => {
       const abstractControl = group.get(key);
       if(abstractControl instanceof FormGroup) {
         this.logValidationErrors(abstractControl);
       } else {
         this.formErrors[key] = '';
-        if(abstractControl && !abstractControl.valid){
+        if(abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)){
           const messages = this.validationMessages[key];
-          console.log(messages);
-          console.log(abstractControl.errors);
+          // console.log(messages);
+          // console.log(abstractControl.errors);
           for(const errorKey in abstractControl.errors){
             if(errorKey) {
               this.formErrors[key] += messages[errorKey] + ' ';
