@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-create-employee',
@@ -22,25 +22,13 @@ export class CreateEmployeeComponent implements OnInit {
     },
     'phone': {
       'required': 'Phone is required.'
-    },
-    'skillName': {
-      'required': 'Skill Name is required.',
-    },
-    'experienceInYears': {
-      'required': 'Experience is required.',
-    },
-    'proficiency': {
-      'required': 'Proficiency is required.',
-    },
+    }
   };
   //This object will only contain validation messages of failed form controls and bind these to UI
   formErrors = {
     'fullName': '',
     'email': '',
-    'phone': '',
-    'skillName': '',
-    'experienceInYears': '',
-    'proficiency': ''
+    'phone': ''
   };
   constructor(private fb: FormBuilder) { }
 
@@ -62,12 +50,9 @@ export class CreateEmployeeComponent implements OnInit {
       contactPreference: ['email'],
       email: ['', Validators.required],
       phone: [''],
-      skills: this.fb.group({
-        skillName: ['', Validators.required],
-        experienceInYears: ['', Validators.required],
-        // proficiency: ['']
-        proficiency: ['', Validators.required] // we can also use initialize by name
-      })
+      skills: this.fb.array([
+        this.addSkillFormGroup()
+      ])
     });
 
     // this.employeeForm.get('fullName').valueChanges.subscribe((values: string) => {
@@ -84,6 +69,10 @@ export class CreateEmployeeComponent implements OnInit {
     // });
   }
 
+  addSkillButtonClick(): void {
+    (<FormArray>this.employeeForm.get('skills')).push(this.addSkillFormGroup());
+  }
+
   logKeyValuePairs(group: FormGroup): void {
     Object.keys(group.controls).forEach((key: string) => {
       const abstractControl = group.get(key);
@@ -96,19 +85,34 @@ export class CreateEmployeeComponent implements OnInit {
     });
   }
 
+  addSkillFormGroup(): FormGroup {
+    return this.fb.group({
+      skillName: ['', Validators.required],
+      experienceInYears: ['', Validators.required],
+      proficiency: ['', Validators.required] // we can also use initialize by name
+    });
+  }
+
   logValidationErrors(group: FormGroup = this.employeeForm): void {
     Object.keys(group.controls).forEach((key: string) => {
       const abstractControl = group.get(key);
-      if(abstractControl instanceof FormGroup) {
+      if (abstractControl instanceof FormGroup) {
         this.logValidationErrors(abstractControl);
+      }
+      if (abstractControl instanceof FormArray) {
+        for (const control of abstractControl.controls) {
+          if (control instanceof FormGroup) {
+            this.logValidationErrors(control);
+          }
+        }
       } else {
         this.formErrors[key] = '';
-        if(abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)){
+        if (abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)){
           const messages = this.validationMessages[key];
           // console.log(messages);
           // console.log(abstractControl.errors);
-          for(const errorKey in abstractControl.errors){
-            if(errorKey) {
+          for (const errorKey in abstractControl.errors){
+            if (errorKey) {
               this.formErrors[key] += messages[errorKey] + ' ';
             }
           }
