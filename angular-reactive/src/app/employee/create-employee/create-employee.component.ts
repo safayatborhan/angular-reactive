@@ -93,6 +93,10 @@ export class CreateEmployeeComponent implements OnInit {
     });
   }
 
+  removeSkillButtonClick(skillGroupIndex: number): void {
+    <FormArray>this.employeeForm.get('skills').removeAt(skillGroupIndex);
+  }
+
   logValidationErrors(group: FormGroup = this.employeeForm): void {
     Object.keys(group.controls).forEach((key: string) => {
       const abstractControl = group.get(key);
