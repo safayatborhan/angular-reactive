@@ -1,5 +1,8 @@
+import { IEmployee } from './../IEmployee';
+import { EmployeeService } from './../employee.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-create-employee',
@@ -30,7 +33,9 @@ export class CreateEmployeeComponent implements OnInit {
     'email': '',
     'phone': ''
   };
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder
+    , private route: ActivatedRoute
+    , private employeeService: EmployeeService) { }
 
   ngOnInit() {
     // this.employeeForm = new FormGroup({
@@ -67,8 +72,31 @@ export class CreateEmployeeComponent implements OnInit {
     // this.employeeForm.get('skills').valueChanges.subscribe(values => {
     //   console.log(JSON.stringify(values));
     // });
+
+    this.route.paramMap.subscribe(params => {
+      const empId = +params.get('id');
+      if(empId) {
+        this.getEmployee(empId);
+      }
+    });
   }
 
+  getEmployee(id: number) {
+    this.employeeService.getEmployee(id)
+    .subscribe((x: IEmployee) => {
+      this.editEmployee(x);
+    },
+    (err: any) => console.log(err)
+    );
+  }
+  editEmployee(employee: IEmployee) {
+    this.employeeForm.patchValue({
+      fullName: employee.fullName,
+      contactPreference: employee.contactPreference,
+      email: employee.email,
+      phone: employee.phone
+    });
+  }
   addSkillButtonClick(): void {
     (<FormArray>this.employeeForm.get('skills')).push(this.addSkillFormGroup());
   }
@@ -94,7 +122,7 @@ export class CreateEmployeeComponent implements OnInit {
   }
 
   removeSkillButtonClick(skillGroupIndex: number): void {
-    <FormArray>this.employeeForm.get('skills').removeAt(skillGroupIndex);
+    <FormArray>this.employeeForm.get('skills')['removeAt'](skillGroupIndex);
   }
 
   logValidationErrors(group: FormGroup = this.employeeForm): void {

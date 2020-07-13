@@ -73,7 +73,7 @@
                 Skill name is required
               </span>
             </div>
-            <div class="col-sm-6" *ngIf="employeeForm.get('skills').length > 1">
+            <div class="col-sm-6" *ngIf="employeeForm.get('skills')['length'] > 1">
               <button title="Delete Skill" type="button" (click)="removeSkillButtonClick(i)" class="btn btn-danger btn-sm pull-right">
                 <span class="glyphicon glyphicon-remove">remove</span>
               </button>
@@ -121,7 +121,7 @@
     </div>
     <div class="panel-footer">
       <div class="btn-toolbar">
-        <button class="btn btn-primary" type="submit">Save</button>
+        <button class="btn btn-primary" type="submit" [disabled]="employeeForm.invalid">Save</button>
         <button class="btn btn-primary" type="button" (click)="onLoadDataClick()">Load Data</button>
         <button class="btn btn-primary" type="button" (click)="onLoadDataPatchClick()">Load Data PatchValue</button>
 
