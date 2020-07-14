@@ -1,3 +1,4 @@
+import { ISkill } from './../ISkill';
 import { IEmployee } from './../IEmployee';
 import { EmployeeService } from './../employee.service';
 import { Component, OnInit } from '@angular/core';
@@ -96,7 +97,22 @@ export class CreateEmployeeComponent implements OnInit {
       email: employee.email,
       phone: employee.phone
     });
+
+    this.employeeForm.setControl('skills', this.setExistingSkills(employee.skills));
   }
+
+  setExistingSkills(skillSets: ISkill[]) : FormArray {
+    const formArray = new FormArray([]);
+    skillSets.forEach(s => {
+      formArray.push(this.fb.group({
+        skillName: s.skillName,
+        experienceInYears: s.experienceInYears,
+        proficiency: s.proficiency
+      }));
+    });
+    return formArray;
+  }
+
   addSkillButtonClick(): void {
     (<FormArray>this.employeeForm.get('skills')).push(this.addSkillFormGroup());
   }
@@ -122,7 +138,10 @@ export class CreateEmployeeComponent implements OnInit {
   }
 
   removeSkillButtonClick(skillGroupIndex: number): void {
-    <FormArray>this.employeeForm.get('skills')['removeAt'](skillGroupIndex);
+    const skillsFormArray = <FormArray>this.employeeForm.get('skills');
+    skillsFormArray['removeAt'](skillGroupIndex);
+    skillsFormArray.markAsDirty();
+    skillsFormArray.markAsTouched();
   }
 
   logValidationErrors(group: FormGroup = this.employeeForm): void {
